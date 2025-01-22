@@ -8,5 +8,5 @@ const StudentSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-export const Student =
-  mongoose.models.Student || mongoose.model("Student", StudentSchema);
+export const Allstudent =
+  mongoose.models.Allstudent || mongoose.model("Allstudent", StudentSchema);

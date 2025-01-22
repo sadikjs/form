@@ -1,135 +1,95 @@
-"use client"
-import { useFieldArray, Controller, useForm } from "react-hook-form";
-import Field from "@/components/Field";
+"use client";
+import { useForm } from "react-hook-form";
 import FieldSet from "@/components/FieldSet";
-import Number from "@/components/Number";
-const Registration = () => {
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-        setError,
-        control
-    } = useForm()
-    const { fields, append, remove } = useFieldArray({
-        name: "socials",
-        control
-    })
-    const registerHandle = (formData) => {
-        console.log(formData)
-    }
-    return (
-        <form onSubmit={handleSubmit(registerHandle)}>
-            <FieldSet label="Registration Form">
-                <Field label="picture insert" error={errors.picture}>
-                    <input
-                    {...register("picture", {required: "picture is required"})}
-                    type="file"
-                    name="picture"
-                    id="picture"
-                    />
-                </Field>
-                <Field label="Full Name" error={errors.fname}>
-                    <input
-                        {...register("fname", { required: "fname is required" })}
-                        className={`p-2 border border-box rounded-lg ${!!errors.fname ? "border-red-600" : "border-gray-300"}`}
-                        type="text"
-                        name="fname"
-                        id="fname"
-                        placeholder="enter fullname here"
-                    />
-                </Field>
-                <Field label="E-mail" error={errors.email}>
-                    <input
-                        {...register("email", { required: "Email is required!" })}
-                        type="email"
-                        id="email"
-                        name="email"
-                        placeholder="enter email here"
-                    />
-                </Field>
-                <Field label="Password" error={errors.password}>
-                    <input
-                        {...register("password", {
-                            required: "password is requried!",
-                            minLength: {
-                                value: 8,
-                                message: "password minimum at last 8 character"
-                            }
-                        })}
-                        className={`p-2 border border-bx rounded-sm ${!!errors.password ? "border-red-500" : "border-gray-200"}`}
-                        type="password"
-                        id="password"
-                        name="password"
-                        placeholder="enter password here"
-                    />
-                </Field>
-                <Field label="Age" error={errors.age}>
-                    <Controller 
-                        name="age"
-                        control={control}
-                        defaultValue={1}
-                        render={({field: {ref, ...field}})=>(
-                            <Number 
-                            id="age"
-                            className={`p-2 border box-border w-full rounded-md ${
-                                !!errors.age
-                                    ? "border-red-500"
-                                    : "border-gray-200"
-                            }`}
-                            {...field}
-                            />
-                        )}
-                    rules={{
-                        max:{
-                            value: 100, 
-                            message: "number in input minimum 0 and maximum 100"
-                        }
-                    }}
-                    />
-                </Field>
-            </FieldSet>
-            <FieldSet label="Social Link Add">
-                {
-                    fields.map((social, index) => {
-                        return(
-                        <div key={social.id}>
-                            <Field label="Social Name">
-                                <input
-                                    {...register(`socials[${index}].name`)}
-                                    type="text"
-                                    id={`socials[${index}].name`}
-                                    name={`socials[${index}].name`}
-                                />
-                            </Field>
-                            <Field label="Social url">
-                                <input
-                                    {...register(`socials[${index}].url`)}
-                                    type="url"
-                                    id={`socials[${index}].url`}
-                                    name={`socials[${index}].url`}
-                                />
-                            </Field>
-                            <button onClick={()=>remove(index)}>
-                                &#8722;
-                            </button>
-                        </div>
-                        )
-                    })
-                }
-                <button
-                    onClick={() => append({ name: "", url: "" })}
-                >Add</button>
-            </FieldSet>
-            <Field>
-                <button
-                    className="bg-blue-800 rounded-sm p-3"
-                >
-                    login
-                </button>
-            </Field>
-        </form>
-    );
-}
-
-export default Registration
+import Field from "@/components/Field";
+import { studentsRegister } from "../actions";
+import { useState } from "react";
+const RegisterForm = () => {
+  const [stutus, setStatus] = useState(null);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm();
+  const registerHandle = async (data) => {
+    const response = await studentsRegister(data);
+    setStatus(response.message);
+    if (response.success) reset();
+  };
+  return (
+    <form
+      className="w-9/12 flex flex-col justify-center items-center"
+      onSubmit={handleSubmit(registerHandle)}
+    >
+      <FieldSet
+        className="w-10/12 flex flex-col justify-center items-center border border-box border-slate-500"
+        label="Student Register form"
+      >
+        <Field label="Name" error={errors.picture}>
+          <input
+            {...register("name", { required: "name is required" })}
+            className={` border border-box rounded-sm ${
+              !!errors.name ? "border-red-600" : "border-green-600"
+            } `}
+            type="text"
+            id="name"
+            name="name"
+            placeholder="enter name here"
+          />
+        </Field>
+        <Field label="age" error={errors.age}>
+          <input
+            {...register("age", { required: "minimum age 20" })}
+            className={` border border-box rounded-sm ${
+              !!errors.age ? "border-red-600" : "border-green-600"
+            } `}
+            type="number"
+            id="age"
+            name="age"
+            placeholder="enter age"
+          />
+        </Field>
+        <Field label="email" errors={errors.email}>
+          <input
+            {...register("email", { required: "email is required" })}
+            className={` border border-box rounded-sm ${
+              !!errors.email ? "border-red-600" : "border-green-600"
+            } `}
+            type="text"
+            id="email"
+            name="email"
+            placeholder="enter email here"
+          />
+        </Field>
+        <Field label="password" errors={errors.password}>
+          <input
+            {...register("password", { required: "password is required" })}
+            className={` border border-box rounded-sm ${
+              !!errors.password ? "border-red-600" : "border-green-600"
+            } `}
+            type="text"
+            id="password"
+            name="password"
+            placeholder="enter password here"
+          />
+        </Field>
+        <Field label="address" error={errors.address}>
+          <textarea
+            {...register("address", { required: "addres is required" })}
+            className={` border border-box rounded-sm ${
+              !!errors.address ? "border-red-600" : "border-green-600"
+            } `}
+            id="address"
+            name="address"
+            rows="4"
+            cols="30"
+          />
+        </Field>
+        <button type="submit">submit</button>
+        {stutus && <div>{stutus}</div>}
+      </FieldSet>
+    </form>
+  );
+};
+export default RegisterForm;
